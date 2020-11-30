@@ -3,7 +3,7 @@
 FROM scientificlinux/sl:7
 
 MAINTAINER Pengfei Ding "dingpf@fnal.gov"
-ENV REFRESHED_AT 2019-03-12
+ENV REFRESHED_AT 2019-11-30
 
 RUN yum clean all \
  && yum -y install epel-release \
@@ -26,43 +26,34 @@ RUN yum clean all \
  gstreamer-plugins-base-devel  \
  vim which net-tools xorg-x11-fonts* \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
- libuuid-devel wget redhat-lsb-core openssh-server \
+ libuuid-devel wget redhat-lsb-core openssh-server evince eog emacs \
   && yum clean all
 
 RUN yum clean all \
  && yum --enablerepo=epel -y install htop osg-wn-client \
- libconfuse-devel x11vnc xvfb nss_wrapper gettext \
- && yum clean all
-
-RUN yum clean all \
- && yum -y install java-11-openjdk \
+ libconfuse-devel xvfb nss_wrapper gettext unzip \
  && yum clean all
 
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
 
+# Fix SSH Config
+RUN echo -e '\tProtocol 2' >> /etc/ssh/ssh_config
+RUN echo -e '\tGSSAPIDelegateCredentials yes' >> /etc/ssh/ssh_config
+RUN echo -e '\tGSSAPIKeyExchange yes' >> /etc/ssh/ssh_config
+RUN echo -e '\tForwardX11 yes' >> /etc/ssh/ssh_config
+RUN echo    'Host 131.225.* *.fnal.gov *soudan.org' >> /etc/ssh/ssh_config
+RUN echo -e '\tProtocol 2' >> /etc/ssh/ssh_config
+RUN echo -e '\tGSSAPIAuthentication yes' >> /etc/ssh/ssh_config
+RUN echo -e '\tGSSAPIDelegateCredentials yes' >> /etc/ssh/ssh_config
+RUN echo -e '\tGSSAPIKeyExchange yes' >> /etc/ssh/ssh_config
+RUN echo -e '\tForwardX11Trusted yes' >> /etc/ssh/ssh_config
+RUN echo -e '\tForwardX11 yes' >> /etc/ssh/ssh_config
+
+
 RUN dbus-uuidgen > /var/lib/dbus/machine-id
 
-# Install No VNC
-ENV NO_VNC_DIR=/scratch/noVNC
-RUN mkdir -p $NO_VNC_DIR/utils/websockify \
- && wget -qO- https://github.com/novnc/noVNC/archive/v0.6.2.tar.gz | tar xz --strip 1 -C $NO_VNC_DIR \
- && wget -qO- https://github.com/novnc/websockify/archive/v0.6.1.tar.gz | tar xz --strip 1 -C $NO_VNC_DIR/utils/websockify \
- && chmod +x -v $NO_VNC_DIR/utils/*.sh \
- && ln -s $NO_VNC_DIR/vnc_auto.html $NO_VNC_DIR/index.html
-
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
-ENV DISPLAY=:1 \
-    VNC_PORT=5900 \
-    NO_VNC_PORT=6900 \
-    VNC_PW=password \
-    VNC_COL_DEPTH=24 \
-    VNC_RESOLUTION=1280x1024 \
-    VNC_VIEW_ONLY=false
-EXPOSE $VNC_PORT $NO_VNC_PORT
-
-ENV TERM=xterm
-
 
 # Create a me user (UID and GID should match the Mac user), add to suoders, and switch to it
 ENV USERNAME=me
@@ -77,6 +68,5 @@ RUN useradd -u $MYUID -g $MYGID -ms /bin/bash $USERNAME && \
 
 USER $USERNAME
 
-ADD start-xvnc.sh /home/$USERNAME
 
 ENTRYPOINT ["/bin/bash"]

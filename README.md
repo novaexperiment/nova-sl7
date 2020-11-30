@@ -1,2 +1,3 @@
 # nova-sl7
-Dockerfile for Scientific Linux 7 image targeted for NOvA offline use
+
+This repo is for the [novaexperiment/sl7](https://hub.docker.com/r/novaexperiment/sl7) docker image. New commits will trigger rebuilds automatically.
