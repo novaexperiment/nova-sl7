@@ -33,10 +33,11 @@ RUN yum clean all \
  && yum install -y https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
  && yum -y update \
  && yum --enablerepo=epel -y install htop osg-wn-client \
- libconfuse-devel xvfb nss_wrapper gettext unzip \
+ libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
  subversion-perl \
  && yum clean all
 
+RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -o /etc/krb5.conf
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
 
