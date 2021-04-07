@@ -34,7 +34,7 @@ RUN yum clean all \
  && yum -y update \
  && yum --enablerepo=epel -y install htop osg-wn-client \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
- subversion-perl \
+ subversion-perl xxhash-libs \
  && yum clean all
 
 RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -o /etc/krb5.conf
