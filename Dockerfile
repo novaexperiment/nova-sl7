@@ -5,6 +5,35 @@ FROM fermilab/fnal-wn-sl7
 MAINTAINER Pengfei Ding "dingpf@fnal.gov"
 ENV REFRESHED_AT 2020-04-07
 
+
+RUN yum clean all \
+ && yum -y update \
+ && yum -y install yum-plugin-priorities \
+ subversion asciidoc bzip2-devel \
+ fontconfig-devel freetype-devel gdbm-devel glibc-devel \
+ ncurses-devel openssl-devel openldap-devel readline-devel \
+ autoconf automake libtool swig texinfo tcl-devel tk-devel \
+ xz-devel xmlto zlib-devel libcurl-devel libjpeg-turbo-devel \
+ libpng-devel libstdc++-devel libuuid-devel libX11-devel \
+ libXext-devel libXft-devel libXi-devel libXrender-devel \
+ libXt-devel libXpm-devel libXmu-devel mesa-libGL-devel \
+ perl-DBD-SQLite perl-ExtUtils-MakeMaker \
+ gcc gcc-c++ libgcc.i686 glibc-devel.i686 libstdc++.i686 libffi-devel \
+ && yum -y install nc perl expat-devel gdb time tar \
+ zip xz bzip2 patch sudo gstreamer gtk2-devel xterm \
+ openssh-clients rsync tmux svn sed cmake \
+ gstreamer-plugins-base-devel  \
+ vim which net-tools xorg-x11-fonts* \
+ xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
+ libuuid-devel openssh-server evince eog emacs htop \
+ libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
+ subversion-perl \
+  && yum clean all
+
+
+RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -o /etc/krb5.conf
+
+
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
 
 # Fix SSH Config
