@@ -1,12 +1,12 @@
 # This Dockerfile is used to build an headles vnc image based on Centos
 
-FROM scientificlinux/sl:7
+FROM fermilab/fnal-wn-sl7
 
 MAINTAINER Pengfei Ding "dingpf@fnal.gov"
-ENV REFRESHED_AT 2019-11-30
+ENV REFRESHED_AT 2020-04-07
+
 
 RUN yum clean all \
- && yum -y install epel-release \
  && yum -y update \
  && yum -y install yum-plugin-priorities \
  subversion asciidoc bzip2-devel \
@@ -17,27 +17,21 @@ RUN yum clean all \
  libpng-devel libstdc++-devel libuuid-devel libX11-devel \
  libXext-devel libXft-devel libXi-devel libXrender-devel \
  libXt-devel libXpm-devel libXmu-devel mesa-libGL-devel \
- mesa-libGLU-devel perl-DBD-SQLite perl-ExtUtils-MakeMaker \
+ perl-DBD-SQLite perl-ExtUtils-MakeMaker \
  gcc gcc-c++ libgcc.i686 glibc-devel.i686 libstdc++.i686 libffi-devel \
- && yum -y install yum-plugin-priorities \
- nc perl expat-devel gdb time tar zip xz bzip2 patch sudo which strace \
- openssh-clients rsync tmux svn git wget cmake \
- gcc gstreamer gtk2-devel xterm \
+ && yum -y install nc perl expat-devel gdb time tar \
+ zip xz bzip2 patch sudo gstreamer gtk2-devel xterm \
+ openssh-clients rsync tmux svn sed cmake \
  gstreamer-plugins-base-devel  \
  vim which net-tools xorg-x11-fonts* \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
- libuuid-devel wget redhat-lsb-core openssh-server evince eog emacs \
-  && yum clean all
-
-RUN yum clean all \
- && yum install -y https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
- && yum -y update \
- && yum --enablerepo=epel -y install htop osg-wn-client \
+ libuuid-devel openssh-server evince eog emacs htop \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
- subversion-perl xxhash-libs \
+ subversion-perl \
  && yum clean all
 
 RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -o /etc/krb5.conf
+
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
 
