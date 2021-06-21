@@ -27,7 +27,7 @@ RUN yum clean all \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
  libuuid-devel openssh-server evince eog emacs htop \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
- subversion-perl \
+ subversion-perl pcre2 \
  && yum clean all
 
 RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -o /etc/krb5.conf
