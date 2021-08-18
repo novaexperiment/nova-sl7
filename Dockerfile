@@ -27,6 +27,7 @@ RUN yum clean all \
  vim which net-tools xorg-x11-fonts* \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
  libuuid-devel wget redhat-lsb-core openssh-server evince eog emacs \
+ gnuplot pcre2 \
   && yum clean all
 
 RUN yum clean all \
@@ -37,7 +38,7 @@ RUN yum clean all \
  subversion-perl \
  && yum clean all
 
-RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -o /etc/krb5.conf
+RUN wget https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -O /etc/krb5.conf
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
 
@@ -54,6 +55,15 @@ RUN echo -e '\tGSSAPIKeyExchange yes' >> /etc/ssh/ssh_config
 RUN echo -e '\tForwardX11Trusted yes' >> /etc/ssh/ssh_config
 RUN echo -e '\tForwardX11 yes' >> /etc/ssh/ssh_config
 
+# vim configuration
+RUN alias vi=vim
+RUN echo -e "set tabstop=2" >> ~/.vimrc
+RUN echo -e "set shiftwidth=2" >> ~/.vimrc
+RUN echo -e "set expandtab" >> ~/.vimrc
+RUN echo -e "set visualbell" >> ~/.vimrc
+RUN echo -e "set t_vb=" >> ~/.vimrc
+RUN echo -e "let g:loaded_matchparen=1" >> ~/.vimrc
+RUN echo -e "syntax on" >> ~/.vimrc
 
 RUN dbus-uuidgen > /var/lib/dbus/machine-id
 
@@ -72,6 +82,7 @@ ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/mpich/lib
 
 # **** Add diy ****
 RUN git clone https://github.com/diatomic/diy /usr/local/diy \
+  && cd /usr/local/diy && git checkout 3.5.0
   && rm -rf /usr/local/diy/.git
 
 
