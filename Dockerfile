@@ -1,12 +1,12 @@
 # This Dockerfile is used to build an headles vnc image based on Centos
 
-FROM fermilab/fnal-wn-sl7
+FROM scientificlinux/sl:7
 
 MAINTAINER Pengfei Ding "dingpf@fnal.gov"
-ENV REFRESHED_AT 2020-04-07
-
+ENV REFRESHED_AT 2019-11-30
 
 RUN yum clean all \
+ && yum -y install epel-release \
  && yum -y update \
  && yum -y install yum-plugin-priorities \
  subversion asciidoc bzip2-devel \
@@ -17,21 +17,27 @@ RUN yum clean all \
  libpng-devel libstdc++-devel libuuid-devel libX11-devel \
  libXext-devel libXft-devel libXi-devel libXrender-devel \
  libXt-devel libXpm-devel libXmu-devel mesa-libGL-devel \
- perl-DBD-SQLite perl-ExtUtils-MakeMaker \
+ mesa-libGLU-devel perl-DBD-SQLite perl-ExtUtils-MakeMaker \
  gcc gcc-c++ libgcc.i686 glibc-devel.i686 libstdc++.i686 libffi-devel \
- && yum -y install nc perl expat-devel gdb time tar \
- zip xz bzip2 patch sudo gstreamer gtk2-devel xterm \
- openssh-clients rsync tmux svn sed cmake \
+ && yum -y install yum-plugin-priorities \
+ nc perl expat-devel gdb time tar zip xz bzip2 patch sudo which strace \
+ openssh-clients rsync tmux svn git wget cmake \
+ gcc gstreamer gtk2-devel xterm \
  gstreamer-plugins-base-devel  \
  vim which net-tools xorg-x11-fonts* \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
- libuuid-devel openssh-server evince eog emacs htop \
+ libuuid-devel wget redhat-lsb-core openssh-server evince eog emacs \
+  && yum clean all
+
+RUN yum clean all \
+ && yum install -y https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
+ && yum -y update \
+ && yum --enablerepo=epel -y install htop osg-wn-client \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
- subversion-perl pcre2 \
+ subversion-perl \
  && yum clean all
 
 RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -o /etc/krb5.conf
-
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
 
@@ -53,18 +59,20 @@ RUN dbus-uuidgen > /var/lib/dbus/machine-id
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-# Create a me user (UID and GID should match the Mac user), add to suoders, and switch to it
-ENV USERNAME=me
+# **** install mpich ****
+RUN mkdir /build
+RUN mkdir /mpich
+RUN cd /build && wget http://www.mpich.org/static/downloads/3.4.1/mpich-3.4.1.tar.gz \
+  && tar xvzf mpich-3.4.1.tar.gz && cd mpich-3.4.1 \
+  && ./configure --disable-fortran  --with-device=ch3 -prefix /mpich && make -j4 && make && make install && make clean && rm -rf /build
 
-ARG MYUID
-ENV MYUID=${MYUID:-1000}
-ARG MYGID
-ENV MYGID=${MYGID:-100}
 
-RUN useradd -u $MYUID -g $MYGID -ms /bin/bash $USERNAME && \
-      echo "$USERNAME ALL=(ALL)   NOPASSWD:ALL" >> /etc/sudoers
+ENV PATH=${PATH}:/mpich/bin
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/mpich/lib
 
-USER $USERNAME
+# **** Add diy ****
+RUN git clone https://github.com/diatomic/diy /usr/local/diy \
+  && rm -rf /usr/local/diy/.git
 
 
 ENTRYPOINT ["/bin/bash"]
