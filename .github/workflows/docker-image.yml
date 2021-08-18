@@ -2,11 +2,11 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master, mpichdiy ]
+    branches: [ latest, master, mpichdiy ]
     tags:
       - '*'
   pull_request:
-    branches: [ master, mpichdiy ]
+    branches: [ latest, master, mpichdiy ]
 jobs:
 
   push_to_registries:
