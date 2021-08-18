@@ -82,7 +82,7 @@ ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/mpich/lib
 
 # **** Add diy ****
 RUN git clone https://github.com/diatomic/diy /usr/local/diy \
-  && cd /usr/local/diy && git checkout 3.5.0
+  && cd /usr/local/diy && git checkout 3.5.0 \
   && rm -rf /usr/local/diy/.git
 
 
