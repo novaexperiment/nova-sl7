@@ -5,6 +5,8 @@ on:
     branches: [ latest, master, mpichdiy ]
     tags:
       - '*'
+    paths-ignore:
+      - 'README.md'
   pull_request:
     branches: [ latest, master, mpichdiy ]
   workflow_dispatch:
