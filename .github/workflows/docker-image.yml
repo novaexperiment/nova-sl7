@@ -7,6 +7,8 @@ on:
       - '*'
   pull_request:
     branches: [ latest, master, mpichdiy ]
+  workflow_dispatch:
+
 jobs:
 
   push_to_registries:
