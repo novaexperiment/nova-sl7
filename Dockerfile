@@ -56,7 +56,8 @@ RUN echo -e '\tForwardX11Trusted yes' >> /etc/ssh/ssh_config
 RUN echo -e '\tForwardX11 yes' >> /etc/ssh/ssh_config
 
 # vim configuration
-RUN alias vi=vim
+#RUN alias vi=vim
+RUN echo -e "alias vi=vim" >> ~/.bashrc
 RUN echo -e "set tabstop=2" >> ~/.vimrc
 RUN echo -e "set shiftwidth=2" >> ~/.vimrc
 RUN echo -e "set expandtab" >> ~/.vimrc
