@@ -1,9 +1,9 @@
 # This Dockerfile assembles a headless vnc image based on Scientific Linux 7
 
-FROM fermilab/fnal-wn-sl7
+FROM scientificlinux/sl:7
 
 MAINTAINER Pengfei Ding "dingpf@fnal.gov"
-ENV REFRESHED_AT 2020-04-07
+ENV REFRESHED_AT 2022-04-28
 
 
 RUN yum clean all \
@@ -28,6 +28,12 @@ RUN yum clean all \
  libuuid-devel openssh-server evince eog emacs htop \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
  subversion-perl pcre2 \
+ && yum clean all
+ 
+ RUN yum clean all \
+ && yum install -y https://repo.opensciencegrid.org/osg/3.6/osg-3.6-el7-release-latest.rpm \
+ && yum -y update \
+ && yum --enablerepo=epel -y install osg-wn-client \
  && yum clean all
 
 RUN wget -O /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf
