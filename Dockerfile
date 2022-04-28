@@ -28,6 +28,7 @@ RUN yum clean all \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
  libuuid-devel wget redhat-lsb-core openssh-server evince eog emacs \
  gnuplot pcre2 \
+ parallel \
   && yum clean all
 
 RUN yum clean all \
