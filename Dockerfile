@@ -32,7 +32,7 @@ RUN yum clean all \
   && yum clean all
 
 RUN yum clean all \
- && yum install -y https://repo.opensciencegrid.org/osg/3.5/osg-3.5-el7-release-latest.rpm \
+ && yum install -y https://repo.opensciencegrid.org/osg/3.6/osg-3.6-el7-release-latest.rpm \
  && yum -y update \
  && yum --enablerepo=epel -y install htop osg-wn-client \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
