@@ -30,7 +30,7 @@ RUN yum clean all \
  subversion-perl pcre2 \
  && yum clean all
 
-RUN wget -o /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf
+RUN wget -O /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf
 
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
