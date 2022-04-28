@@ -7,6 +7,7 @@ ENV REFRESHED_AT 2022-04-28
 
 
 RUN yum clean all \
+ && yum -y install epel-release
  && yum -y update \
  && yum -y install yum-plugin-priorities \
  subversion asciidoc bzip2-devel \
