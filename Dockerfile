@@ -10,7 +10,7 @@ RUN yum clean all \
  && yum -y update \
  && yum -y install yum-plugin-priorities \
  subversion asciidoc bzip2-devel \
- fontconfig-devel freetype-devel gdbm-devel glibc-devel \
+ fontconfig-devel freetype-devel gdbm-devel  \
  ncurses-devel openssl-devel openldap-devel readline-devel \
  autoconf automake libtool swig texinfo tcl-devel tk-devel \
  xz-devel xmlto zlib-devel libcurl-devel libjpeg-turbo-devel \
@@ -18,7 +18,7 @@ RUN yum clean all \
  libXext-devel libXft-devel libXi-devel libXrender-devel \
  libXt-devel libXpm-devel libXmu-devel mesa-libGL-devel \
  mesa-libGLU-devel perl-DBD-SQLite perl-ExtUtils-MakeMaker \
- gcc gcc-c++ libgcc.i686 glibc-devel.i686 libstdc++.i686 libffi-devel \
+ gcc gcc-c++ libgcc.i686 libstdc++.i686 libffi-devel \
  && yum -y install yum-plugin-priorities \
  nc perl expat-devel gdb time tar zip xz bzip2 patch sudo which strace \
  openssh-clients rsync tmux svn git wget cmake \
@@ -70,6 +70,56 @@ RUN echo -e "syntax on" >> ~/.vimrc
 RUN dbus-uuidgen > /var/lib/dbus/machine-id
 
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
+# **** install bison (needed when compiling glibc) **** 
+
+RUN yum clean all \
+  && yum install -y bison \
+  && yum clean all
+
+# **** add gcc and python UPS product ****
+RUN mkdir /products \
+  && cd /products \
+  && wget https://github.com/DUNE-DAQ/daq-release/raw/develop/misc/ups-products-area.tar.bz2 \
+  && tar xf  ups-products-area.tar.bz2 \
+  && wget https://scisoft.fnal.gov/scisoft/packages/gcc/v8_2_0/gcc-8.2.0-sl7-x86_64.tar.bz2 \
+  && wget https://scisoft.fnal.gov/scisoft/packages/python/v3_8_3b/python-3.8.3b-sl7-x86_64.tar.bz2 \
+  && wget https://scisoft.fnal.gov/scisoft/packages/sqlite/v3_32_03_00/sqlite-3.32.03.00-sl7-x86_64.tar.bz2 \
+  && tar xf gcc-8.2.0-sl7-x86_64.tar.bz2 \
+  && tar xf python-3.8.3b-sl7-x86_64.tar.bz2 \
+  && tar xf sqlite-3.32.03.00-sl7-x86_64.tar.bz2 \
+  && rm -rf *.bz2 
+
+# **** install GNU make 4.2 (needed by glibc 2.35) ****
+RUN cd /root \
+  &&  wget https://ftp.gnu.org/gnu/make/make-4.2.tar.gz \
+  && tar xvf make-4.2.tar.gz \
+  &&  cd make-4.2 \
+  && source /products/setup \
+  && setup gcc v8_2_0 \
+  && ./configure \
+  && make -j 16 \
+  && make install \
+  && rm -f /usr/bin/make \
+  && ln -s /usr/local/bin/make /usr/bin/make
+
+# **** install glibc ****
+RUN cd /root \
+  && wget https://ftp.gnu.org/gnu/glibc/glibc-2.35.tar.gz \
+  && tar xf glibc-2.35.tar.gz \
+  && cd glibc-2.35 \
+  && mkdir build \
+  && cd build \
+  && source /products/setup \
+  && setup gcc v8_2_0 \
+  && setup python v3_8_3b \
+  && ../configure --prefix=/opt/glibc \
+  && echo $LD_LIBRARY_PATH \
+  && make -j 16 \
+  && make install
+
+ENV LD_LIBRARY_PATH="/opt/glibc/lib:${LD_LIBRARY_PATH}"
+
 
 # **** install mpich ****
 RUN mkdir /build
