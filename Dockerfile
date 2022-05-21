@@ -118,19 +118,25 @@ RUN cd /root \
   && make -j 16 \
   && make install
 
-ENV LD_LIBRARY_PATH="/opt/glibc/lib:${LD_LIBRARY_PATH}"
-
-
 # **** install mpich ****
-RUN mkdir /build
-RUN mkdir /mpich
-RUN cd /build && wget http://www.mpich.org/static/downloads/3.4.1/mpich-3.4.1.tar.gz \
-  && tar xvzf mpich-3.4.1.tar.gz && cd mpich-3.4.1 \
-  && ./configure --disable-fortran  --with-device=ch3 -prefix /mpich && make -j4 && make && make install && make clean && rm -rf /build
-
-
-ENV PATH=${PATH}:/mpich/bin
-ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/mpich/lib
+RUN mkdir /mpich \
+  && mkdir /build \
+  && cd /build \
+  && wget -nv http://www.mpich.org/static/downloads/3.4.1/mpich-3.4.1.tar.gz \
+  && tar xf mpich-3.4.1.tar.gz \
+  && cd mpich-3.4.1 \
+  && source /products/setup \
+  && setup gcc v8_2_0 \
+  && ./configure LDFLAGS="-Wl,--rpath=/opt/glibc/lib \
+    -Wl,--dynamic-linker=/opt/glibc/lib/ld-linux-x86-64.so.2" \
+    --disable-fortran --with-device=ch3 -prefix /mpich \
+  && make -j4 \
+  && make \
+  && make install \
+  && make clean \
+  && rm -rf /build
+ENV PATH=$PATH:/mpich/bin
+ENV LD_LIBRARY_PATH=/mpich/lib
 
 # **** Add diy ****
 RUN git clone https://github.com/diatomic/diy /usr/local/diy \
