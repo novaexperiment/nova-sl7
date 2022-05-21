@@ -105,9 +105,9 @@ RUN cd /root \
 
 # **** install glibc ****
 RUN cd /root \
-  && wget https://ftp.gnu.org/gnu/glibc/glibc-2.35.tar.gz \
-  && tar xf glibc-2.35.tar.gz \
-  && cd glibc-2.35 \
+  && wget -nv https://ftp.gnu.org/gnu/glibc/glibc-2.34.tar.gz \
+  && tar xf glibc-2.34.tar.gz \
+  && cd glibc-2.34 \
   && mkdir build \
   && cd build \
   && source /products/setup \
