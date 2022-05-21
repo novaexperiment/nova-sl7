@@ -91,20 +91,23 @@ RUN mkdir /products \
   && rm -rf *.bz2 
 
 # **** install GNU make 4.2 (needed by glibc 2.35) ****
-RUN cd /root \
-  &&  wget -nv https://ftp.gnu.org/gnu/make/make-4.2.tar.gz \
-  && tar xvf make-4.2.tar.gz \
-  &&  cd make-4.2 \
+RUN mkdir /build \
+  && cd /build \
+  && wget -nv https://ftp.gnu.org/gnu/make/make-4.2.tar.gz \
+  && tar xf make-4.2.tar.gz \
+  && cd make-4.2 \
   && source /products/setup \
   && setup gcc v8_2_0 \
   && ./configure \
   && make -j 16 \
   && make install \
   && rm -f /usr/bin/make \
-  && ln -s /usr/local/bin/make /usr/bin/make
+  && ln -s /usr/local/bin/make /usr/bin/make \
+  && rm -rf /build
 
 # **** install glibc ****
-RUN cd /root \
+RUN mkdir /build \
+  && cd /build \
   && wget -nv https://ftp.gnu.org/gnu/glibc/glibc-2.34.tar.gz \
   && tar xf glibc-2.34.tar.gz \
   && cd glibc-2.34 \
@@ -114,9 +117,11 @@ RUN cd /root \
   && setup gcc v8_2_0 \
   && setup python v3_8_3b \
   && ../configure --prefix=/opt/glibc \
-  && echo $LD_LIBRARY_PATH \
   && make -j 16 \
-  && make install
+  && make install \
+  && rm -rf /build
+ENV LDFLAGS="-Wl,--rpath=/opt/glibc/lib \
+  -Wl,--dynamic-linker=/opt/glibc/lib/ld-linux-x86-64.so.2"
 
 # **** install mpich ****
 RUN mkdir /mpich \
@@ -127,13 +132,9 @@ RUN mkdir /mpich \
   && cd mpich-3.4.1 \
   && source /products/setup \
   && setup gcc v8_2_0 \
-  && ./configure LDFLAGS="-Wl,--rpath=/opt/glibc/lib \
-    -Wl,--dynamic-linker=/opt/glibc/lib/ld-linux-x86-64.so.2" \
-    --disable-fortran --with-device=ch3 -prefix /mpich \
-  && make -j4 \
-  && make \
+  && ./configure --disable-fortran --with-device=ch3 -prefix /mpich \
+  && make -j16 \
   && make install \
-  && make clean \
   && rm -rf /build
 ENV PATH=$PATH:/mpich/bin
 ENV LD_LIBRARY_PATH=/mpich/lib
