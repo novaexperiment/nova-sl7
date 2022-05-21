@@ -39,7 +39,7 @@ RUN yum clean all \
  subversion-perl \
  && yum clean all
 
-RUN wget https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -O /etc/krb5.conf
+RUN wget -nv https://authentication.fnal.gov/krb5conf/Linux/krb5.conf -O /etc/krb5.conf
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
 
@@ -80,11 +80,11 @@ RUN yum clean all \
 # **** add gcc and python UPS product ****
 RUN mkdir /products \
   && cd /products \
-  && wget https://github.com/DUNE-DAQ/daq-release/raw/develop/misc/ups-products-area.tar.bz2 \
+  && wget -nv https://github.com/DUNE-DAQ/daq-release/raw/develop/misc/ups-products-area.tar.bz2 \
   && tar xf  ups-products-area.tar.bz2 \
-  && wget https://scisoft.fnal.gov/scisoft/packages/gcc/v8_2_0/gcc-8.2.0-sl7-x86_64.tar.bz2 \
-  && wget https://scisoft.fnal.gov/scisoft/packages/python/v3_8_3b/python-3.8.3b-sl7-x86_64.tar.bz2 \
-  && wget https://scisoft.fnal.gov/scisoft/packages/sqlite/v3_32_03_00/sqlite-3.32.03.00-sl7-x86_64.tar.bz2 \
+  && wget -nv https://scisoft.fnal.gov/scisoft/packages/gcc/v8_2_0/gcc-8.2.0-sl7-x86_64.tar.bz2 \
+  && wget -nv https://scisoft.fnal.gov/scisoft/packages/python/v3_8_3b/python-3.8.3b-sl7-x86_64.tar.bz2 \
+  && wget -nv https://scisoft.fnal.gov/scisoft/packages/sqlite/v3_32_03_00/sqlite-3.32.03.00-sl7-x86_64.tar.bz2 \
   && tar xf gcc-8.2.0-sl7-x86_64.tar.bz2 \
   && tar xf python-3.8.3b-sl7-x86_64.tar.bz2 \
   && tar xf sqlite-3.32.03.00-sl7-x86_64.tar.bz2 \
@@ -92,7 +92,7 @@ RUN mkdir /products \
 
 # **** install GNU make 4.2 (needed by glibc 2.35) ****
 RUN cd /root \
-  &&  wget https://ftp.gnu.org/gnu/make/make-4.2.tar.gz \
+  &&  wget -nv https://ftp.gnu.org/gnu/make/make-4.2.tar.gz \
   && tar xvf make-4.2.tar.gz \
   &&  cd make-4.2 \
   && source /products/setup \
