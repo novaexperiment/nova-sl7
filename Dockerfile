@@ -28,7 +28,7 @@ RUN yum clean all \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
  libuuid-devel openssh-server evince eog emacs htop \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
- subversion-perl pcre2 \
+ subversion-perl pcre2 redhat-lsb-core \
  && yum clean all
  
  RUN yum clean all \
