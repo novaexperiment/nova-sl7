@@ -1,13 +1,10 @@
-# This Dockerfile is used to build an headles vnc image based on Centos
-
 FROM scientificlinux/sl:7
 
-MAINTAINER Pengfei Ding "dingpf@fnal.gov"
-ENV REFRESHED_AT 2019-11-30
+MAINTAINER v hewes "jhewes15@fnal.gov"
 
 RUN yum clean all \
- && yum -y install epel-release \
  && yum -y update \
+ && yum -y install epel-release \
  && yum -y install yum-plugin-priorities \
  subversion asciidoc bzip2-devel \
  fontconfig-devel freetype-devel gdbm-devel  \
@@ -27,13 +24,10 @@ RUN yum clean all \
  vim which net-tools xorg-x11-fonts* \
  xorg-x11-server-utils xorg-x11-twm dbus dbus-x11 \
  libuuid-devel wget redhat-lsb-core openssh-server evince eog emacs \
- gnuplot pcre2 \
- parallel \
-  && yum clean all
-
-RUN yum clean all \
- && yum install -y https://repo.opensciencegrid.org/osg/3.6/osg-3.6-el7-release-latest.rpm \
- && yum -y update \
+ gnuplot pcre2 parallel \
+ https://repo.opensciencegrid.org/osg/3.6/osg-3.6-el7-release-latest.rpm \
+ https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest.noarch.rpm \
+ && yum -y install cvmfs.x86_64 cvmfs-shrinkwrap.x86_64 \
  && yum --enablerepo=epel -y install htop osg-wn-client \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
  subversion-perl \
@@ -108,9 +102,9 @@ RUN mkdir /build \
 # **** install glibc ****
 RUN mkdir /build \
   && cd /build \
-  && wget -nv https://ftp.gnu.org/gnu/glibc/glibc-2.34.tar.gz \
-  && tar xf glibc-2.34.tar.gz \
-  && cd glibc-2.34 \
+  && wget -nv https://ftp.gnu.org/gnu/glibc/glibc-2.33.tar.gz \
+  && tar xf glibc-2.33.tar.gz \
+  && cd glibc-2.33 \
   && mkdir build \
   && cd build \
   && source /products/setup \
@@ -138,10 +132,41 @@ RUN mkdir /mpich \
   && rm -rf /build
 ENV PATH=$PATH:/mpich/bin
 ENV LD_LIBRARY_PATH=/mpich/lib
+ENV LDFLAGS="-L/opt/glibc/lib $LDFLAGS"
 
 # **** Add diy ****
 RUN git clone https://github.com/diatomic/diy /usr/local/diy \
   && cd /usr/local/diy \
   && rm -rf /usr/local/diy/.git
+ENV DIY_INC=/usr/local/diy/include
+
+# ADD shrinkwrap /shrinkwrap
+
+# RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova-development.opensciencegrid.org.spec -r nova-development.opensciencegrid.org
+# RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova.opensciencegrid.org.spec -r nova.opensciencegrid.org
+
+# FROM base AS testrel
+
+# ADD .ssh /root/.ssh
+
+# RUN eval $(ssh-agent) \
+#   && ssh-add /root/.ssh/novakey \
+#   && source /cvmfs/nova.opensciencegrid.org/novasoft/slf6/novasoft/setup/setup_nova.sh -b maxopt \
+#   && newrel -t development nova \
+#   && cd nova \
+#   && srt_setup -a \
+#   && git checkout feature/tthakore_Nus_FC2022 \
+#   && addpkg_git -h CAFAna \
+#   && addpkg_git -h NuXAna \
+#   && addpkg_git -h FeldmanCousins \
+#   && make -j16 CAFAna.all \
+#   && make -j16 NuXAna.all \
+#   && make -j16 FeldmanCousins.all
+# 
+# FROM base AS production
+# 
+# COPY --from=testrel /nova /nova
+# 
+# ENV SRT_PRIVATE_CONTEXT /nova
 
 ENTRYPOINT ["/bin/bash"]

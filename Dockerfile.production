@@ -1,0 +1,14 @@
+FROM vhewes/nova:release
+
+RUN yum -y install cvmfs.x86_64 cvmfs-shrinkwrap.x86_64
+
+ADD shrinkwrap /shrinkwrap
+
+RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova-development.opensciencegrid.org.spec -r nova-development.opensciencegrid.org
+RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova.opensciencegrid.org.spec -r nova.opensciencegrid.org
+
+ENV SRT_PRIVATE_CONTEXT=/nova
+
+RUN mkdir /data
+ADD data /data/nus22
+
