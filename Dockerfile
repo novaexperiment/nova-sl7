@@ -1,6 +1,7 @@
-FROM scientificlinux/sl:7
+# base image
+FROM scientificlinux/sl:7 AS base
 
-MAINTAINER v hewes "jhewes15@fnal.gov"
+MAINTAINER v hewes "vhewes@fnal.gov"
 
 RUN yum clean all \
  && yum -y update \
@@ -74,7 +75,7 @@ RUN yum clean all \
 # **** add gcc and python UPS product ****
 RUN mkdir /products \
   && cd /products \
-  && wget -nv https://github.com/DUNE-DAQ/daq-release/raw/develop/misc/ups-products-area.tar.bz2 \
+  && wget -nv https://github.com/DUNE-DAQ/daq-release/raw/prep-release/dunedaq-v2.11.1/misc/ups-products-area.tar.bz2 \
   && tar xf  ups-products-area.tar.bz2 \
   && wget -nv https://scisoft.fnal.gov/scisoft/packages/gcc/v8_2_0/gcc-8.2.0-sl7-x86_64.tar.bz2 \
   && wget -nv https://scisoft.fnal.gov/scisoft/packages/python/v3_8_3b/python-3.8.3b-sl7-x86_64.tar.bz2 \
@@ -139,4 +140,20 @@ RUN git clone https://github.com/diatomic/diy /usr/local/diy \
   && cd /usr/local/diy \
   && rm -rf /usr/local/diy/.git
 ENV DIY_INC=/usr/local/diy/include
+
+# production image
+FROM vhewes/nova:release AS production
+
+RUN yum -y install cvmfs.x86_64 cvmfs-shrinkwrap.x86_64
+
+COPY --from=vhewes/nova:shrinkwrap /shrinkwrap /shrinkwrap
+ADD shrinkwrap/* /shrinkwrap/
+
+RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova-development.opensciencegrid.org.spec -r nova-development.opensciencegrid.org
+RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova.opensciencegrid.org.spec -r nova.opensciencegrid.org
+
+ENV SRT_PRIVATE_CONTEXT=/nova
+
+RUN mkdir /data
+ADD data /data/nus22
 
