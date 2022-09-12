@@ -158,4 +158,5 @@ ADD data /data/nus22
 
 ADD scripts/entrypoint.sh /nova
 ENTRYPOINT ["/nova/entrypoint.sh"]
+CMD /bin/bash
 
