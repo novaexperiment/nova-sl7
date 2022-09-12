@@ -142,18 +142,20 @@ RUN git clone https://github.com/diatomic/diy /usr/local/diy \
 ENV DIY_INC=/usr/local/diy/include
 
 # production image
-FROM vhewes/nova:release AS production
+FROM vhewes/nova:base AS production
 
-RUN yum -y install cvmfs.x86_64 cvmfs-shrinkwrap.x86_64
+COPY --from=vhewes/nova:release /nova /nova
+COPY --from=vhewes/nova:release /shrinkwrap /shrinkwrap
 
-COPY --from=vhewes/nova:shrinkwrap /shrinkwrap /shrinkwrap
 ADD shrinkwrap/* /shrinkwrap/
-
-RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova-development.opensciencegrid.org.spec -r nova-development.opensciencegrid.org
-RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -f /shrinkwrap/fc2022-nus.nova.opensciencegrid.org.spec -r nova.opensciencegrid.org
-
-ENV SRT_PRIVATE_CONTEXT=/nova
+RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -r nova-development.opensciencegrid.org \
+  -f /shrinkwrap/fc2022-nus.nova-development.opensciencegrid.org.spec
+RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -r nova.opensciencegrid.org \
+  -f /shrinkwrap/fc2022-nus.nova.opensciencegrid.org.spec
 
 RUN mkdir /data
 ADD data /data/nus22
+
+ADD scripts/entrypoint.sh /nova
+ENTRYPOINT ["/nova/entrypoint.sh"]
 
