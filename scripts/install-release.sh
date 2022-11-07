@@ -8,7 +8,7 @@ cd /
 newrel -t development nova
 cd nova
 srt_setup -a
-git checkout feature/vhewes_nus22fc
+git checkout feature/tthakore_Nus_FC2022
 
 # clone packages
 addpkg_git -h CAFAna
