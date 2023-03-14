@@ -36,7 +36,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            novaexperiment/sl7
             ghcr.io/${{ github.repository }}
           tags: |
             type=ref,event=branch
