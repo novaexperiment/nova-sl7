@@ -29,6 +29,7 @@ RUN yum clean all \
  libuuid-devel openssh-server evince eog emacs htop \
  libconfuse-devel xvfb nss_wrapper gettext unzip krb5-workstation \
  subversion-perl pcre2 redhat-lsb-core python-six \
+ xxhash-libs libzstd \
  && yum clean all
  
  RUN yum clean all \
