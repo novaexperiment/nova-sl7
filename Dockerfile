@@ -38,7 +38,7 @@ RUN yum clean all \
  && yum --enablerepo=epel -y install osg-wn-client \
  && yum clean all
 
-RUN wget -O /etc/krb5.conf https://authentication.fnal.gov/krb5conf/Linux/krb5.conf
+RUN wget -O /etc/krb5.conf https://authentication.fnal.gov/krb5conf/SL7/krb5.conf
 
 
 ENV UPS_OVERRIDE="-H Linux64bit+3.10-2.17"
