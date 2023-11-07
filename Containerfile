@@ -1,5 +1,5 @@
 # base image
-FROM scientificlinux/sl:7 AS base
+FROM scientificlinux/sl:7
 
 MAINTAINER v hewes "vhewes@fnal.gov"
 
@@ -141,22 +141,17 @@ RUN git clone https://github.com/diatomic/diy /usr/local/diy \
   && rm -rf /usr/local/diy/.git
 ENV DIY_INC=/usr/local/diy/include
 
-# production image
-FROM vhewes/nova:base AS production
+# **** Build release ****
+RUN mkdir -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
-COPY --from=vhewes/nova:release /nova /nova
-COPY --from=vhewes/nova:release /shrinkwrap /shrinkwrap
-
-ADD shrinkwrap/* /shrinkwrap/
-RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -r nova-development.opensciencegrid.org \
-  -f /shrinkwrap/fc2022-nus.nova-development.opensciencegrid.org.spec
-RUN /shrinkwrap/get_shrinkwrap_cvmfs.sh -r nova.opensciencegrid.org \
-  -f /shrinkwrap/fc2022-nus.nova.opensciencegrid.org.spec
-
-RUN mkdir /data
-ADD data /data/nus22
-
-ADD scripts/entrypoint.sh /nova
-ENTRYPOINT ["/nova/entrypoint.sh"]
-CMD /bin/bash
-
+RUN --mount=type=ssh source /cvmfs/nova.opensciencegrid.org/novasoft/slf6/novasoft/setup/setup_nova.sh -b maxopt && \
+    cd / && \
+    newrel -t development nova && \
+    cd nova && \
+    srt_setup -a && \
+    addpkg_git -h CAFAna && \
+    addpkg_git -h 3FlavorAna && \
+    addpkg_git -h FeldmanCousins && \
+    make -j16 CAFAna.all && \
+    make -j16 3FlavorAna.all && \
+    make -j16 FeldmanCousins.all
