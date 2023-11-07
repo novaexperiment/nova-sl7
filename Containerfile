@@ -1,4 +1,5 @@
-# base image
+# 2024 Feldman Cousins image recipe
+
 FROM scientificlinux/sl:7
 
 MAINTAINER v hewes "vhewes@fnal.gov"
