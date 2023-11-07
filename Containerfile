@@ -68,7 +68,6 @@ RUN dbus-uuidgen > /var/lib/dbus/machine-id
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
 # **** install bison (needed when compiling glibc) **** 
-
 RUN yum clean all \
   && yum install -y bison \
   && yum clean all
