@@ -131,8 +131,9 @@ RUN mkdir /mpich \
   && make -j16 \
   && make install \
   && rm -rf /build
-ENV PATH=$PATH:/mpich/bin
-ENV LD_LIBRARY_PATH=/mpich/lib
+ENV MPICH=/mpich
+ENV PATH=$PATH:$MPICH/bin
+ENV LD_LIBRARY_PATH=$MPICH/lib
 ENV LDFLAGS="-L/opt/glibc/lib $LDFLAGS"
 
 # **** Add diy ****
