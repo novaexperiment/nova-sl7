@@ -118,6 +118,23 @@ RUN mkdir /build \
 ENV LDFLAGS="-Wl,--rpath=/opt/glibc/lib \
   -Wl,--dynamic-linker=/opt/glibc/lib/ld-linux-x86-64.so.2"
 
+# **** install mpich ****
+RUN mkdir /mpich \
+  && mkdir /build \
+  && cd /build \
+  && wget -nv http://www.mpich.org/static/downloads/3.4.1/mpich-3.4.1.tar.gz \
+  && tar xf mpich-3.4.1.tar.gz \
+  && cd mpich-3.4.1 \
+  && source /products/setup \
+  && setup gcc v8_2_0 \
+  && ./configure --disable-fortran --with-device=ch3 -prefix /mpich \
+  && make -j16 \
+  && make install \
+  && rm -rf /build
+ENV PATH=$PATH:/mpich/bin
+ENV LD_LIBRARY_PATH=/mpich/lib
+ENV LDFLAGS="-L/opt/glibc/lib $LDFLAGS"
+
 # **** Add diy ****
 RUN git clone https://github.com/diatomic/diy /usr/local/diy \
   && cd /usr/local/diy \
