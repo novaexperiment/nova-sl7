@@ -150,9 +150,5 @@ RUN --mount=type=ssh source /cvmfs/nova.opensciencegrid.org/novasoft/slf6/novaso
     newrel -t development nova && \
     cd nova && \
     srt_setup -a && \
-    addpkg_git -h CAFAna && \
-    addpkg_git -h 3FlavorAna && \
     addpkg_git -h FeldmanCousins && \
-    make -j16 CAFAna.all && \
-    make -j16 3FlavorAna.all && \
     make -j16 FeldmanCousins.all
